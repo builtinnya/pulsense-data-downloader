@@ -9,7 +9,7 @@
       <div class="navbar-end">
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link" href="#">
-            Docs
+            {{ email }}
           </a>
           <div class="navbar-dropdown is-right">
             <hr class="navbar-divider">
