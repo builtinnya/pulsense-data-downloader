@@ -1,7 +1,16 @@
+import fs from 'fs'
+import path from 'path'
+import moment from 'moment'
+import json2csv from 'json2csv'
+
 const PULSENSE_AUTH_ENDPOINT = 'https://go-wellness.epson.com/pulsense-view/login/'
 const PULSENSE_VIEW_ENDPOINT = 'https://go-wellness.epson.com/pulsense-view/view/'
 const AUTH_ENDPOINT = 'https://auth.cp.epson.com/account/login/'
-// const STRESS_METER_ENDPOINT = 'https://go-wellness.epson.com/pulsense-view/view/ajaxGetStressMeterGraphDay'
+const STRESS_METER_ENDPOINT = 'https://go-wellness.epson.com/pulsense-view/view/ajaxGetStressMeterGraphDay'
+
+function normalizeDate (date) {
+  return moment(date).format('YYYY-MM-DD')
+}
 
 function requestPulsenseLogin () {
   const params = new URLSearchParams()
@@ -23,6 +32,40 @@ function requestPulsenseLogin () {
     credentials: 'include',
     body: params
   })
+}
+
+function downloadStressData (date, outputFile) {
+  const normalizedDate = normalizeDate(date)
+  const url = new URL(STRESS_METER_ENDPOINT)
+
+  const params = {
+    dashboardReqFrom: normalizedDate,
+    dashboardReqTo: normalizedDate,
+    dashboardTargetTerm: 'day',
+    dashboardTargetTermAction: 'day',
+    termFormat: 'M月d日',
+    terminalDate: normalizedDate,
+    zoomInterval: '0'
+  }
+
+  Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]))
+
+  return fetch(url, {
+    method: 'get',
+    credentials: 'include',
+    body: params
+  }).then((response) => response.json()).then(({ stressDailyHrData }) => json2csv({
+    data: stressDailyHrData,
+    fields: ['time', 'value', 'type']
+  })).then((csv) => new Promise((resolve, reject) => fs.writeFile(outputFile, csv, (err) => {
+    if (err) {
+      throw err
+    }
+
+    console.log(`${outputFile} has been downloaded`)
+
+    resolve()
+  })))
 }
 
 export default {
@@ -59,5 +102,24 @@ export default {
       credentials: 'include',
       body: params
     })
+  },
+
+  download ({ dateFrom, dateTo, outputDir, onProgress }) {
+    let p = Promise.resolve()
+    let currentDate = moment(dateFrom)
+
+    while (!currentDate.isAfter(dateTo)) {
+      const date = moment(currentDate).clone()
+
+      p = p.then(() => {
+        const outputFile = path.join(outputDir, `stress-${normalizeDate(date)}.csv`)
+
+        return downloadStressData(date, outputFile)
+      }).then(onProgress)
+
+      currentDate.add(1, 'days')
+    }
+
+    return p
   }
 }
