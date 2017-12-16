@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/components/LandingPage').default
     },
     {
+      path: '/download',
+      name: 'download-page',
+      component: require('@/components/DownloadPage').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

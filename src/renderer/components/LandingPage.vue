@@ -1,128 +1,115 @@
 <template>
   <div id="wrapper">
-    <img id="logo" src="~@/assets/logo.png" alt="electron-vue">
-    <main>
-      <div class="left-side">
-        <span class="title">
-          Welcome to your new project!
-        </span>
-        <system-information></system-information>
-      </div>
-
-      <div class="right-side">
-        <div class="doc">
-          <div class="title">Getting Started</div>
-          <p>
-            electron-vue comes packed with detailed documentation that covers everything from
-            internal configurations, using the project structure, building your application,
-            and so much more.
-          </p>
-          <button @click="open('https://simulatedgreg.gitbooks.io/electron-vue/content/')">Read the Docs</button><br><br>
-        </div>
-        <div class="doc">
-          <div class="title alt">Other Documentation</div>
-          <button class="alt" @click="open('https://electron.atom.io/docs/')">Electron</button>
-          <button class="alt" @click="open('https://vuejs.org/v2/guide/')">Vue.js</button>
+    <section class="hero is-primary">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            PULSENSE Data Downloader
+          </h1>
+          <h2 class="subtitle">
+            We just need it.
+          </h2>
         </div>
       </div>
-    </main>
+    </section>
+    <section class="login">
+      <form ref="loginForm" @submit.prevent="login">
+        <div class="field">
+          <label class="label">Email</label>
+          <div class="control has-icons-left has-icons-right">
+            <input
+              class="input"
+              type="email"
+              placeholder="Email"
+              v-bind:value="email"
+              @input="handleInputEmail"
+              required
+            />
+            <span class="icon is-small is-left">
+              <i class="fa fa-envelope"></i>
+            </span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control has-icons-left has-icons-right">
+            <input
+              class="input"
+              type="password"
+              placeholder="Password"
+              v-bind:value="password"
+              @input="handleInputPassword"
+              required
+            />
+            <span class="icon is-small is-left">
+              <i class="fa fa-key"></i>
+            </span>
+          </div>
+        </div>
+        <div class="field is-grouped is-grouped-right">
+          <div class="control">
+            <button class="button is-primary" v-bind:disabled="isLoading()">
+              <span v-if="isLoading()"><i class="fa fa-spinner fa-spin"></i>&nbsp;</span> Login
+            </button>
+          </div>
+        </div>
+        <div class="notification is-danger" v-if="hasFailed()">
+          ログインに失敗しました
+        </div>
+      </form>
+    </section>
   </div>
 </template>
 
 <script>
-  import SystemInformation from './LandingPage/SystemInformation'
+  const data = {
+    email: '',
+    password: ''
+  }
 
   export default {
     name: 'landing-page',
-    components: { SystemInformation },
+    components: {},
+    data () {
+      return data
+    },
+    watch: {
+      '$store.state.Auth.status': function (newStatus) {
+        if (newStatus === 'success') {
+          this.$router.push('/download')
+        }
+      }
+    },
     methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
+      login (event) {
+        this.$store.dispatch('login', {
+          email: this.email,
+          password: this.password
+        })
+      },
+
+      handleInputEmail (event) {
+        this.email = event.target.value
+      },
+
+      handleInputPassword (event) {
+        this.password = event.target.value
+      },
+
+      isLoading () {
+        return this.$store.getters.isAuthLoading
+      },
+
+      hasFailed () {
+        return this.$store.getters.hasAuthFailed
       }
     }
   }
 </script>
 
-<style>
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body { font-family: 'Source Sans Pro', sans-serif; }
-
-  #wrapper {
-    background:
-      radial-gradient(
-        ellipse at top left,
-        rgba(255, 255, 255, 1) 40%,
-        rgba(229, 229, 229, .9) 100%
-      );
-    height: 100vh;
-    padding: 60px 80px;
-    width: 100vw;
-  }
-
-  #logo {
-    height: auto;
-    margin-bottom: 20px;
-    width: 420px;
-  }
-
-  main {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  main > div { flex-basis: 50%; }
-
-  .left-side {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .welcome {
-    color: #555;
-    font-size: 23px;
-    margin-bottom: 10px;
-  }
-
-  .title {
-    color: #2c3e50;
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 6px;
-  }
-
-  .title.alt {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-
-  .doc p {
-    color: black;
-    margin-bottom: 10px;
-  }
-
-  .doc button {
-    font-size: .8em;
-    cursor: pointer;
-    outline: none;
-    padding: 0.75em 2em;
-    border-radius: 2em;
-    display: inline-block;
-    color: #fff;
-    background-color: #4fc08d;
-    transition: all 0.15s ease;
-    box-sizing: border-box;
-    border: 1px solid #4fc08d;
-  }
-
-  .doc button.alt {
-    color: #42b983;
-    background-color: transparent;
+<style lang="scss">
+  .login {
+    margin: 20px auto;
+    max-width: 512px;
   }
 </style>
