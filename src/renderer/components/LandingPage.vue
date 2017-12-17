@@ -54,7 +54,7 @@
           </div>
         </div>
         <div class="notification is-danger" v-if="hasFailed()">
-          ログインに失敗しました
+          Login failed
         </div>
       </form>
     </section>
