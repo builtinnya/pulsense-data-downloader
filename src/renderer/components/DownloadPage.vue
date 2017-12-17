@@ -9,7 +9,7 @@
         </h2>
       </div>
       <div class="container">
-        <div class="stress-data-download-form">
+        <div class="stress-data-download-container">
           <div class="field is-horizontal">
             <div class="field-body">
               <div class="field">
@@ -46,9 +46,22 @@
               </div>
             </div>
           </div>
+          <div class="progress-container" v-if="!isDownloadingInitial">
+            <progress
+              :class="{ progress: true, 'is-medium': true, 'is-primary': isDownloading, 'is-success': hasDownloadingSucceeded, 'is-danger': hasDownloadingFailed }"
+              :value="downloadingProgressCount"
+              :max="downloadingProgressTotal"
+            >
+              {{ `${downloadingProgressCount} / ${downloadingProgressTotal}` }}
+            </progress>
+            <p>
+              {{ downloadingProgressMessage }}
+            </p>
+          </div>
         </div>
       </div>
     </section>
+
     <div ref="stressDataModal" v-bind:class="{ modal: true, 'is-active': isModalOpen }">
       <div class="modal-background" @click="closeStressDataModal"></div>
       <div class="modal-content">
@@ -66,7 +79,7 @@
               <p class="is-center">
                 from <strong>{{ formattedDateFrom }}</strong> to <strong>{{ formattedDateTo }}</strong> (inclusive).
               </p>
-              <div class="output-dir-form">
+              <div class="output-dir-container">
                 <div class="file has-name">
                   <label class="file-label">
                     <input class="file-input" type="file" webkitdirectory @change="handleChangeOutputDir">
@@ -126,6 +139,34 @@
 
       formattedDateTo () {
         return formatDate(this.dateTo)
+      },
+
+      isDownloadingInitial () {
+        return this.$store.getters.isDownloadingInitial
+      },
+
+      isDownloading () {
+        return this.$store.getters.isDownloading
+      },
+
+      hasDownloadingSucceeded () {
+        return this.$store.getters.hasDownloadingSucceeded
+      },
+
+      hasDownloadingFailed () {
+        return this.$store.getters.hasDownloadingFailed
+      },
+
+      downloadingProgressMessage () {
+        return this.$store.getters.downloadingProgressMessage
+      },
+
+      downloadingProgressCount () {
+        return this.$store.getters.downloadingProgressCount
+      },
+
+      downloadingProgressTotal () {
+        return this.$store.getters.downloadingProgressTotal
       }
     },
     methods: {
@@ -154,6 +195,8 @@
       },
 
       download () {
+        this.isModalOpen = false
+
         this.$store.dispatch('download', {
           dateFrom: this.dateFrom,
           dateTo: this.dateTo,
@@ -165,12 +208,16 @@
 </script>
 
 <style scoped lang="scss">
-  .stress-data-download-form {
+  .stress-data-download-container {
     margin: 23px auto;
   }
 
-  .output-dir-form {
+  .output-dir-container {
     margin: 10px auto;
+  }
+
+  .progress-container {
+    margin: 25px auto;
   }
 
   .is-center {

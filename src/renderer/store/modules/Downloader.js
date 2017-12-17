@@ -1,17 +1,33 @@
+import moment from 'moment'
+
 import api from '../../api/epson'
 
 const state = {
   status: 'initial',
-  error: null
+  error: null,
+  progress: {
+    message: '',
+    processedCount: 0,
+    totalCount: 0
+  }
 }
 
 const getters = {
-  isDownloading: (state) => state.status === 'loading'
+  isDownloadingInitial: (state) => state.status === 'initial',
+  isDownloading: (state) => state.status === 'loading',
+  hasDownloadingFailed: (state) => state.status === 'failed',
+  hasDownloadingSucceeded: (state) => state.status === 'success',
+  downloadingProgressMessage: (state) => state.progress.message,
+  downloadingProgressCount: (state) => state.progress.processedCount,
+  downloadingProgressTotal: (state) => state.progress.totalCount
 }
 
 const mutations = {
   DOWNLOAD (state) {
     state.status = 'loading'
+    state.progress.message = ''
+    state.progress.processedCount = 0
+    state.progress.totalCount = 0
   },
 
   DOWNLOAD_SUCCESS (state) {
@@ -21,6 +37,17 @@ const mutations = {
   DOWNLOAD_FAILURE (state, { error }) {
     state.status = 'failed'
     state.error = error
+  },
+
+  PROGRESS (state, { date, outputFile, processedCount, totalCount }) {
+    if (processedCount === totalCount) {
+      state.progress.message = 'Done.'
+    } else {
+      state.progress.message = `Processing ${moment(date).format('YYYY/MM/DD')}… (output to ${outputFile})`
+    }
+
+    state.progress.processedCount = processedCount
+    state.progress.totalCount = totalCount
   }
 }
 
@@ -32,7 +59,9 @@ const actions = {
       dateFrom,
       dateTo,
       outputDir,
-      onProgress: () => Promise.resolve()
+      onProgress: ({ date, outputFile, processedCount, totalCount }) => {
+        commit('PROGRESS', { date, outputFile, processedCount, totalCount })
+      }
     }).then(() => {
       commit('DOWNLOAD_SUCCESS')
     }).catch((error) => {

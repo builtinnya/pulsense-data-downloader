@@ -59,10 +59,10 @@ function downloadStressData (date, outputFile) {
     fields: ['time', 'value', 'type']
   })).then((csv) => new Promise((resolve, reject) => fs.writeFile(outputFile, csv, (err) => {
     if (err) {
-      throw err
-    }
+      reject(err)
 
-    console.log(`${outputFile} has been downloaded`)
+      return
+    }
 
     resolve()
   })))
@@ -105,8 +105,11 @@ export default {
   },
 
   download ({ dateFrom, dateTo, outputDir, onProgress }) {
+    const totalCount = moment(dateTo).diff(dateFrom, 'days') + 1
+
     let p = Promise.resolve()
     let currentDate = moment(dateFrom)
+    let processedCount = 0
 
     while (!currentDate.isAfter(dateTo)) {
       const date = moment(currentDate).clone()
@@ -114,11 +117,18 @@ export default {
       p = p.then(() => {
         const outputFile = path.join(outputDir, `stress-${normalizeDate(date)}.csv`)
 
-        return downloadStressData(date, outputFile)
-      }).then(onProgress)
+        return Promise.all([
+          outputFile,
+          onProgress({ date, outputFile, processedCount, totalCount })
+        ])
+      }).then(([ outputFile ]) => downloadStressData(date, outputFile)).then(() => {
+        processedCount++
+      })
 
       currentDate.add(1, 'days')
     }
+
+    p = p.then(() => onProgress({ processedCount, totalCount }))
 
     return p
   }
