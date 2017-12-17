@@ -15,20 +15,22 @@
               <div class="field">
                 <label class="label">From</label>
                 <p class="control is-expanded has-icons-left">
-                  <input class="input" type="text" placeholder="e.g. 2018/01/01" @input="handleInputDateFrom">
+                  <input :class="{ input: true, 'is-danger': dateFromError }" type="text" placeholder="e.g. 2018/01/01" @input="handleInputDateFrom">
                   <span class="icon is-small is-left">
                     <i class="fa fa-calendar"></i>
                   </span>
                 </p>
+                <p class="help is-danger" v-if="dateFromError">{{ dateFromError }}</p>
               </div>
               <div class="field">
                 <label class="label">To</label>
                 <p class="control is-expanded has-icons-left has-icons-right">
-                  <input class="input" type="text" placeholder="e.g. 2018/02/01" @input="handleInputDateTo">
+                  <input :class="{ input: true, 'is-danger': dateToError }" type="text" placeholder="e.g. 2018/02/01" @input="handleInputDateTo">
                   <span class="icon is-small is-left">
                     <i class="fa fa-calendar"></i>
                   </span>
                 </p>
+                <p class="help is-danger" v-if="dateToError">{{ dateToError }}</p>
               </div>
               <div class="field">
                 <label class="label">Download</label>
@@ -80,7 +82,7 @@
                 from <strong>{{ formattedDateFrom }}</strong> to <strong>{{ formattedDateTo }}</strong> (inclusive).
               </p>
               <div class="output-dir-container">
-                <div class="file has-name">
+                <div :class="{ file: true, 'has-name': true, 'is-danger': outputDirError }">
                   <label class="file-label">
                     <input class="file-input" type="file" webkitdirectory @change="handleChangeOutputDir">
                     <span class="file-cta">
@@ -118,8 +120,11 @@
   const data = {
     isModalOpen: false,
     dateFrom: '',
+    dateFromError: '',
     dateTo: '',
-    outputDir: ''
+    dateToError: '',
+    outputDir: '',
+    outputDirError: ''
   }
 
   const formatDate = (date) => moment(date).format('YYYY/MM/DD')
@@ -171,6 +176,10 @@
     },
     methods: {
       openStressDataModal () {
+        if (!this.validateDateRange()) {
+          return
+        }
+
         this.isModalOpen = true
       },
 
@@ -180,10 +189,14 @@
 
       handleInputDateFrom (event) {
         this.dateFrom = event.target.value
+
+        this.validateDateFrom()
       },
 
       handleInputDateTo (event) {
         this.dateTo = event.target.value
+
+        this.validateDateTo()
       },
 
       handleChangeOutputDir (event) {
@@ -192,9 +205,49 @@
         }
 
         this.outputDir = event.target.files[0].path
+
+        this.validateOutputDir()
+      },
+
+      validateDateFrom () {
+        this.dateFromError = moment(this.dateFrom).isValid() ? '' : 'Invalid date'
+
+        return !this.dateFromError
+      },
+
+      validateDateTo () {
+        this.dateToError = moment(this.dateTo).isValid() ? '' : 'Invalid date'
+
+        return !this.dateToError
+      },
+
+      validateDateRange () {
+        return this.validateDateFrom() && this.validateDateTo()
+      },
+
+      validateOutputDir () {
+        if (!this.outputDir) {
+          this.outputDirError = 'Required'
+
+          return false
+        }
+
+        this.outputDirError = ''
+
+        return true
       },
 
       download () {
+        if (!this.validateDateRange()) {
+          this.isModalOpen = false
+
+          return
+        }
+
+        if (!this.validateOutputDir()) {
+          return
+        }
+
         this.isModalOpen = false
 
         this.$store.dispatch('download', {
