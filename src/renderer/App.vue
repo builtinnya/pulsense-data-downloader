@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'pulsense-data-loader'
+    name: 'pulsense-data-downloader'
   }
 </script>
 

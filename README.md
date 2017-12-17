@@ -1,4 +1,4 @@
-# pulsense-data-loader
+# pulsense-data-downloader
 
 > A data loader for PULSENSE
 

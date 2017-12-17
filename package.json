@@ -1,8 +1,8 @@
 {
-  "name": "pulsense-data-loader",
+  "name": "pulsense-data-downloader",
   "version": "0.0.0",
   "author": "Naoto Yokoyama <builtinnya@gmail.com>",
-  "description": "A data loader for PULSENSE",
+  "description": "A data downloader for PULSENSE",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -22,7 +22,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "pulsense-data-loader",
+    "productName": "pulsense-data-downloader",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"
