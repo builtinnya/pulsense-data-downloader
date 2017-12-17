@@ -1,10 +1,11 @@
 import { remote } from 'electron'
+import Cookies from 'js-cookie'
 
 import api from '../../api/epson'
 
 const state = {
   status: 'initial',
-  email: '',
+  email: Cookies.get('user.email') || '',
   error: null
 }
 
@@ -48,6 +49,8 @@ const actions = {
 
     return api.login(email, password).then(() => {
       commit('LOGIN_SUCCESS', { email })
+
+      Cookies.set('user.email', email)
     }).catch((error) => {
       commit('LOGIN_FAILURE', { error })
     })
