@@ -45,7 +45,7 @@ function downloadStressData (date, outputFile) {
     dashboardTargetTermAction: 'day',
     termFormat: 'M月d日',
     terminalDate: normalizedDate,
-    zoomInterval: '0'
+    zoomInterval: '2'
   }
 
   Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]))
