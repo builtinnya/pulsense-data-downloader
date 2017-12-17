@@ -15,7 +15,13 @@
               <div class="field">
                 <label class="label">From</label>
                 <p class="control is-expanded has-icons-left">
-                  <input :class="{ input: true, 'is-danger': dateFromError }" type="text" placeholder="e.g. 2018/01/01" @input="handleInputDateFrom">
+                  <input
+                    :class="{ input: true, 'is-danger': dateFromError }"
+                    type="text"
+                    placeholder="e.g. 2018/01/01"
+                    :value="dateFrom"
+                    @input="handleInputDateFrom"
+                  />
                   <span class="icon is-small is-left">
                     <i class="fa fa-calendar"></i>
                   </span>
@@ -25,7 +31,13 @@
               <div class="field">
                 <label class="label">To</label>
                 <p class="control is-expanded has-icons-left has-icons-right">
-                  <input :class="{ input: true, 'is-danger': dateToError }" type="text" placeholder="e.g. 2018/02/01" @input="handleInputDateTo">
+                  <input
+                    :class="{ input: true, 'is-danger': dateToError }"
+                    type="text"
+                    placeholder="e.g. 2018/02/01"
+                    :value="dateTo"
+                    @input="handleInputDateTo"
+                  />
                   <span class="icon is-small is-left">
                     <i class="fa fa-calendar"></i>
                   </span>
@@ -59,6 +71,9 @@
             <p>
               {{ downloadingProgressMessage }}
             </p>
+          </div>
+          <div class="notification is-danger" v-if="hasDownloadingFailed">
+            Downloading failed
           </div>
         </div>
       </div>
