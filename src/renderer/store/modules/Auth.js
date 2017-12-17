@@ -1,3 +1,5 @@
+import { remote } from 'electron'
+
 import api from '../../api/epson'
 
 const state = {
@@ -54,9 +56,15 @@ const actions = {
   logout ({ commit }) {
     commit('LOGOUT')
 
-    return api.logout().then(() => {
+    return api.logout().then(() => new Promise((resolve) => {
+      remote.getCurrentWebContents().session.clearStorageData([], () => {
+        resolve()
+      })
+    })).then(() => {
       commit('LOGOUT_SUCCESS')
     }).catch((error) => {
+      console.log(error)
+
       commit('LOGOUT_FAILURE', { error })
     })
   }
