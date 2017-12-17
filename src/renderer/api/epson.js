@@ -92,9 +92,11 @@ export default {
     })
   },
 
+  // TODO: Figure out how to logout properly
   logout () {
     const params = new URLSearchParams()
 
+    params.set('selectPage', '/view')
     params.set('logout', 'Submit')
 
     return fetch(PULSENSE_VIEW_ENDPOINT, {
