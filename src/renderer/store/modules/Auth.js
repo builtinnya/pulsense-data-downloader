@@ -3,9 +3,17 @@ import Cookies from 'js-cookie'
 
 import api from '../../api/epson'
 
+const getUserEmail = () => {
+  return Cookies.get('user.email')
+}
+
+const isAuthenticated = () => {
+  return Boolean(getUserEmail())
+}
+
 const state = {
-  status: 'initial',
-  email: Cookies.get('user.email') || '',
+  status: isAuthenticated() ? 'success' : 'initial',
+  email: getUserEmail() || '',
   error: null
 }
 
