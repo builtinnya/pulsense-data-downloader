@@ -189,6 +189,17 @@
         return this.$store.getters.downloadingProgressTotal
       }
     },
+    mounted () {
+      this.isModalOpen = false
+      this.dateFrom = ''
+      this.dateFromError = ''
+      this.dateTo = ''
+      this.dateToError = ''
+      this.outputDir = ''
+      this.outputDirError = ''
+
+      this.$store.dispatch('initDownloader')
+    },
     methods: {
       openStressDataModal () {
         if (!this.validateDateRange()) {

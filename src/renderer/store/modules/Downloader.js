@@ -23,6 +23,14 @@ const getters = {
 }
 
 const mutations = {
+  INIT (state) {
+    state.status = 'initial'
+    state.error = null
+    state.progress.message = ''
+    state.progress.processedCount = 0
+    state.progress.totalCount = 0
+  },
+
   DOWNLOAD (state) {
     state.status = 'loading'
     state.progress.message = ''
@@ -52,6 +60,10 @@ const mutations = {
 }
 
 const actions = {
+  initDownloader ({ commit }) {
+    commit('INIT')
+  },
+
   download ({ commit }, { dateFrom, dateTo, outputDir }) {
     commit('DOWNLOAD')
 
