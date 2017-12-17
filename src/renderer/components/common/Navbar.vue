@@ -4,8 +4,13 @@
       <a class="navbar-item" href="#">
         <strong>PULSENSE Data Downloader</strong>
       </a>
+      <button :class="{ button: true, 'navbar-burger': true, 'is-primary': true, 'is-active': isMenuActive }" @click="toggleMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
-    <div class="navbar-menu">
+    <div :class="{ 'navbar-menu': true, 'is-active': isMenuActive }">
       <div class="navbar-end">
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link" href="#">
@@ -26,6 +31,10 @@
 </template>
 
 <script>
+  const data = {
+    isMenuActive: false
+  }
+
   export default {
     name: 'navbar',
     watch: {
@@ -35,6 +44,9 @@
         }
       }
     },
+    data () {
+      return data
+    },
     computed: {
       email () {
         return this.$store.getters.email
@@ -43,6 +55,10 @@
     methods: {
       logout () {
         this.$store.dispatch('logout')
+      },
+
+      toggleMenu () {
+        this.isMenuActive = !this.isMenuActive
       }
     }
   }
