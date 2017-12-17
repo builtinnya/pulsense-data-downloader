@@ -13,12 +13,12 @@
       </div>
     </section>
     <section class="login">
-      <form ref="loginForm" @submit.prevent="login">
+      <div>
         <div class="field">
           <label class="label">Email</label>
           <div class="control has-icons-left has-icons-right">
             <input
-              class="input"
+              :class="{ input: true, 'is-danger': emailError }"
               type="email"
               placeholder="Email"
               v-bind:value="email"
@@ -29,12 +29,13 @@
               <i class="fa fa-envelope"></i>
             </span>
           </div>
+          <p class="help is-danger" v-if="emailError">{{ emailError }}</p>
         </div>
         <div class="field">
           <label class="label">Password</label>
           <div class="control has-icons-left has-icons-right">
             <input
-              class="input"
+              :class="{ input: true, 'is-danger': passwordError }"
               type="password"
               placeholder="Password"
               v-bind:value="password"
@@ -45,10 +46,11 @@
               <i class="fa fa-key"></i>
             </span>
           </div>
+          <p class="help is-danger" v-if="passwordError">{{ passwordError }}</p>
         </div>
         <div class="field is-grouped is-grouped-right">
           <div class="control">
-            <button class="button is-primary" v-bind:disabled="isLoading()">
+            <button class="button is-primary" v-bind:disabled="isLoading()" @click="login">
               <span v-if="isLoading()"><i class="fa fa-spinner fa-spin"></i>&nbsp;</span> Login
             </button>
           </div>
@@ -56,15 +58,19 @@
         <div class="notification is-danger" v-if="hasFailed()">
           Login failed
         </div>
-      </form>
+      </div>
     </section>
   </div>
 </template>
 
 <script>
+  import validator from 'validator'
+
   const data = {
     email: '',
-    password: ''
+    emailError: '',
+    password: '',
+    passwordError: ''
   }
 
   export default {
@@ -82,6 +88,10 @@
     },
     methods: {
       login () {
+        if (!this.validate()) {
+          return
+        }
+
         this.$store.dispatch('login', {
           email: this.email,
           password: this.password
@@ -90,10 +100,48 @@
 
       handleInputEmail (event) {
         this.email = event.target.value
+
+        this.validateEmail()
       },
 
       handleInputPassword (event) {
         this.password = event.target.value
+
+        this.validatePassword()
+      },
+
+      validateEmail () {
+        if (!this.email) {
+          this.emailError = 'Required'
+
+          return false
+        }
+
+        if (!validator.isEmail(this.email)) {
+          this.emailError = 'Invalid'
+
+          return false
+        }
+
+        this.emailError = ''
+
+        return true
+      },
+
+      validatePassword () {
+        if (!this.password) {
+          this.passwordError = 'Required'
+
+          return false
+        }
+
+        this.passwordError = ''
+
+        return true
+      },
+
+      validate () {
+        return this.validateEmail() && this.validatePassword()
       },
 
       isLoading () {
