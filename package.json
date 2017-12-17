@@ -2,7 +2,7 @@
   "name": "pulsense-data-downloader",
   "version": "0.0.0",
   "author": "Naoto Yokoyama <builtinnya@gmail.com>",
-  "description": "A data downloader for PULSENSE",
+  "description": "An unofficial data downloader for PULSENSE",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {

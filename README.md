@@ -1,6 +1,7 @@
 # pulsense-data-downloader
 
-> A data loader for PULSENSE
+> An unofficial data downloader for PULSENSE.
+> [PULSENSE](https://www.epson.jp/products/pulsense/) is a registered trademark of Epson, registered in Japan, the U.S. and other countries.
 
 #### Build Setup
 
@@ -22,6 +23,12 @@ npm test
 npm run lint
 
 ```
+
+## License
+
+Copyright © 2017 Naoto Yokoyama
+
+Distributed under the MIT license. See the [LICENSE](./LICENSE) file for full details.
 
 ---
 

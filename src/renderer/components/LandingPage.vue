@@ -7,7 +7,7 @@
             PULSENSE Data Downloader
           </h1>
           <h2 class="subtitle">
-            We just need it.
+            This app is <strong>UNOFFICIAL.</strong> We just need it.
           </h2>
         </div>
       </div>
