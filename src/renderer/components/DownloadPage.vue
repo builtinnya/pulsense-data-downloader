@@ -94,7 +94,7 @@
                 You are going to download your stress data:
               </p>
               <p class="is-center">
-                from <strong>{{ formattedDateFrom }}</strong> to <strong>{{ formattedDateTo }}</strong> (inclusive).
+                from <strong>{{ formattedDateFrom }}</strong> to <strong>{{ formattedDateTo }}</strong> (inclusive, <strong>{{ dayCount }} days</strong>).
               </p>
               <div class="output-dir-container">
                 <div :class="{ file: true, 'has-name': true, 'is-danger': outputDirError }">
@@ -159,6 +159,10 @@
 
       formattedDateTo () {
         return formatDate(this.dateTo)
+      },
+
+      dayCount () {
+        return moment(this.dateTo).diff(this.dateFrom, 'days') + 1
       },
 
       isDownloadingInitial () {
